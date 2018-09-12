@@ -1,0 +1,121 @@
+<!--Graphics ND_1
+https://www.w3schools.com/html/tryit.asp?filename=tryhtml5_canvas_tut_path2-->
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+
+<script>
+var r1=0;
+var r2=0;
+var R1=0;
+var R2=10;
+var c ;
+var ctx;
+
+(function init() {
+
+	c = document.getElementById("myCanvas");
+	ctx = c.getContext("2d");
+
+    requestAnimationFrame(draw);
+
+})();
+
+function draw() {
+
+	var x1, x2, x3;
+    var y1, y2, y3;
+    var x=250;
+    var y=250;
+    var size = 100;
+    var size2 =80;
+
+	// reset transforms before clearing
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0,0,500,500);
+    
+    ctx.save();
+    ctx.translate(200,200);
+    ctx.rotate(R1);
+
+for(var i=0; i<10; i++){
+
+    x1=Math.sin(r1+Math.PI*0.66)*size;
+    y1=Math.cos(r1+Math.PI*0.66)*size;
+
+    x2=Math.sin(r1+Math.PI*1.33)*size;
+    y2=Math.cos(r1+Math.PI*1.33)*size;
+
+    x3=Math.sin(r1+Math.PI*2)*size;
+    y3=Math.cos(r1+Math.PI*2)*size;
+	
+    ctx.fillStyle = "purple";
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.lineTo(x3,y3);
+    ctx.closePath();
+    ctx.fill();
+    
+    r1 += (30*Math.PI/180);
+}
+    
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(0, 0, 30, 0, Math.PI*2, true); 
+    ctx.closePath();
+    ctx.fill();
+    
+    ctx.restore();
+	ctx.translate(310,310);
+    ctx.rotate(R2);
+    
+for(var i=0; i<10; i++){
+
+    x1=Math.sin(r2+Math.PI*0.66)*size2;
+    y1=Math.cos(r2+Math.PI*0.66)*size2;
+
+    x2=Math.sin(r2+Math.PI*1.33)*size2;
+    y2=Math.cos(r2+Math.PI*1.33)*size2;
+
+    x3=Math.sin(r2+Math.PI*2)*size2;
+    y3=Math.cos(r2+Math.PI*2)*size2;
+	
+    ctx.fillStyle = "red";
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.lineTo(x3,y3);
+    ctx.closePath();
+    ctx.fill();
+    
+    r2 += (40*Math.PI/180);
+}
+	ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(0, 0, 30, 0, Math.PI*2, true); 
+    ctx.closePath();
+    ctx.fill();
+    
+    R1 += 0.03;
+    R2 -= 0.04;
+    
+    requestAnimationFrame(draw);
+}
+
+</script> 
+
+</body>
+</html>
+
+
+</script> 
+
+</body>
+</html>
