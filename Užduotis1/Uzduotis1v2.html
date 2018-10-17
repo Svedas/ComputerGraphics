@@ -1,0 +1,197 @@
+
+
+<html>
+ <h1>Uzduotis1</h1>
+  <p><button onclick="reset()">Reset</button><button onclick="fractals()">Fractals split</button><button onclick="initTransform1()">Transform Blue</button><button onclick="initTransform2()">Transform Red</button><button onclick="initTransform3()">Transform Pink</button><button onclick="initTransform4()">Transform Green</button></p>
+   <canvas id="canvas" width="500" height="600"></canvas>
+    <script>
+    
+      var steps = 0;
+      var speed = 15;
+      var readyForInterval = 1;
+      var timer,t;
+      
+      var canvas = document.getElementById('canvas');
+      var ctx = canvas.getContext("2d");
+      
+      var sin = Math.sin(Math.PI/2)*0.5;
+	  var cos = Math.cos(Math.PI/2)*0.5;
+
+      function draw() {
+        clear();
+        drawF(steps);
+      } 
+      // Recursive draw 
+      function drawF(step) {
+        if (step > 0) {
+          step = step-1; 
+          ctx.save();//1
+          ctx.save();//2
+          ctx.save();//3
+
+          ctx.transform(0.5, 0, 0, 0.5, 0, 0); 
+          if (step == steps-1)
+            ctx.fillStyle = "rgb(0,0,255)";
+          drawF(step);
+          ctx.restore();//3
+
+          ctx.transform(cos, sin, -sin, cos, 500, 0); 
+          if (step == steps-1)
+            ctx.fillStyle = "rgb(255,0,0)";
+          drawF(step); 
+		  ctx.restore();//2
+
+          ctx.transform(0.25, 0, 0, -0.25, 125, 375); 
+          if (step == steps-1)
+            ctx.fillStyle = "rgb(255,0,255)";
+          drawF(step); 
+          ctx.restore();//1
+
+          ctx.transform(0.5, 0, 0, -0.5, 250, 500);
+          if (step == steps-1)
+            ctx.fillStyle = "rgb(0,255,0)";
+          drawF(step); 
+        }
+        else drawT();    
+      }
+      function drawT() {
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(500,0);
+        ctx.lineTo(500,500);
+        ctx.lineTo(250,500);
+        ctx.fill();
+      } 
+      function reset(){
+      	ctx.resetTransform();
+        ctx.fillStyle = "rgb(255,255,255)";
+        ctx.rect(0,0,500,600);
+        ctx.fill();
+        ctx.fillStyle = "rgb(0,0,0)";
+        clearInterval(timer);
+		steps=0;
+        drawT();
+      }
+      function clear(){
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.fillStyle = "rgb(255,255,255)";
+        ctx.rect(0,0,500,600);
+        ctx.fill();
+        ctx.fillStyle = "rgb(0,0,0)";
+      }
+	  draw();///
+      
+      function fractals(){
+      	if(steps<7){
+        	steps=steps+1;
+      		draw();
+        }else{
+        	steps=0;
+            draw();
+            clearInterval(timer);
+        }
+      }
+      // Blue
+      function initTransform1() {
+        clear();
+		t = 0;
+        if(readyForInterval == 1){
+        	readyForInterval = 0;
+        	timer = setInterval(function(){transform1();},speed); 
+        }
+        
+        function transform1(time){
+          clear();
+          drawT();
+          ctx.fillStyle = "rgb(0,0,255)";
+          ctx.transform((1-t)*1 + t*0.5, 0, 0, (1-t)*1 + t*0.5, 0, 0);
+          drawT();
+          t=t+0.01;
+          if(t>1.01){
+              clearInterval(timer);
+              readyForInterval = 1;
+          }
+        }        
+      }
+      // Red
+      function initTransform2() {
+        clear();
+		t = 0;
+        if(readyForInterval == 1){
+        	readyForInterval = 0;
+        	timer = setInterval(function(){transform2();},speed); 
+        } 
+        
+        function transform2(time){
+          clear();
+          drawT();
+          ctx.fillStyle = "rgb(255,0,0)";
+          ctx.transform((1-t)*1 + t*cos,  0+t*sin, 
+                         0+t*-sin,        (1-t)*1 + t*cos, 
+                         0+t*500,         0);
+          drawT();
+          t=t+0.01;
+          if(t>1.01){
+              clearInterval(timer);
+              readyForInterval = 1;
+          }
+        }        
+      }
+      // Pink
+      function initTransform3() {
+        clear();
+		t = 0;
+        if(readyForInterval == 1){
+        	readyForInterval = 0;
+        	timer = setInterval(function(){transform3();},speed); 
+        } 
+        
+        function transform3(time){
+          clear();
+          drawT();
+          ctx.fillStyle = "rgb(255,0,255)";
+          ctx.transform((1-t)*1 + t*0.25, 0, 
+          				 0,               (1-t)*1 + t*-0.25, 
+                         0+t*125,         0+t*375);
+          drawT();
+          t=t+0.01;
+          if(t>1.01){
+              clearInterval(timer);
+              readyForInterval = 1;
+              clear();
+              drawT();
+              ctx.fillStyle = "rgb(255,0,255)";
+              ctx.transform(0.25, 0, 0, -0.25, 125, 375);
+          	  drawT();
+          }
+        }        
+      }
+      // Green
+      function initTransform4() {
+        clear();
+		t = 0;
+        if(readyForInterval == 1){
+        	readyForInterval = 0;
+        	timer = setInterval(function(){transform4();},speed); 
+        }  
+        
+        function transform4(time){
+          clear();
+          drawT();
+          ctx.fillStyle = "rgb(0,255,0)";
+          ctx.transform((1-t)*1 + t*0.5,  0, 
+          				 0,               (1-t)*1 + t*-0.5, 
+                         0 + t*250,       0 + t*500);
+          drawT();
+          t=t+0.01;
+          if(t>1.01){
+              clearInterval(timer);
+              readyForInterval = 1;
+          }
+        }        
+      }
+      
+    
+  </script>   
+ </body>
+</html>
