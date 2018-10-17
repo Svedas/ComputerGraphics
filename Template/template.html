@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Example 01.03 - Materials and light</title>
+    <script type="text/javascript" src="..\libs\three.js"></script>
+    <script type="text/javascript" src="..\libs\jquery-1.9.0.js"></script>
+    <script type="text/javascript" src="..\libs\stats.js"></script>
+	<script type="text/javascript" src="..\libs\dat.gui.js"></script>
+	<script type="text/javascript" src="..\libs\TrackballControls.js"></script>
+    <style>
+        body{
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div id="Stats-output"> </div>
+
+<!-- Div which will hold the Output -->
+<div id="WebGL-output"> </div>
+
+<!-- Javascript code that runs our Three.js examples -->
+<script type="text/javascript">
+
+    // once everything is loaded, we run our Three.js stuff.
+    $(function () {
+	
+		var clock = new THREE.Clock();
+
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        var scene = new THREE.Scene();
+		
+		var axes = new THREE.AxisHelper( 20 );
+        scene.add(axes);
+
+        // create a camera, which defines where we're looking at.
+        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+		
+		// position and point the camera to the center of the scene
+        camera.position.x = -30;
+        camera.position.y = 40;
+        camera.position.z = 30;
+        camera.lookAt(scene.position);
+		
+		// create a render and set the size
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setClearColorHex(0xEEEEEE, 1.0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMapEnabled = true;
+		// add the output of the renderer to the html element
+        $("#WebGL-output").append(renderer.domElement);
+
+        // create the ground plane
+        var planeGeometry = new THREE.PlaneGeometry(60,20);
+        var planeMaterial =    new THREE.MeshLambertMaterial({color: 0xffffff});
+        var plane = new THREE.Mesh(planeGeometry,planeMaterial);
+        plane.receiveShadow  = true;
+
+        // rotate and position the plane
+        plane.rotation.x=-0.5*Math.PI;
+        plane.position.x=15
+        plane.position.y=0
+        plane.position.z=0
+
+        scene.add(plane);
+		
+		// add spotlight for the shadows
+        var spotLight = new THREE.SpotLight( 0xffffff );
+        spotLight.position.set( -40, 60, -10 );
+        spotLight.castShadow = true;
+        scene.add( spotLight );
+		
+		var trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
+		trackballControls.rotateSpeed = 1.0;
+        trackballControls.zoomSpeed = 1.0;
+        trackballControls.panSpeed = 1.0;
+		//trackballControls.noZoom=false;
+		//trackballControls.noPan=false;
+        trackballControls.staticMoving = true;
+		//trackballControls.dynamicDampingFactor=0.3;
+		
+		/////////////////////////////////////////////
+		///..........................................
+		
+		
+		
+		///..........................................
+		/////////////////////////////////////////////
+		
+        var controls = new function() {
+            this.temp = 1;
+        }
+		
+		var gui = new dat.GUI();
+        gui.add(controls, 'temp',0,5).listen();
+
+        // call the render function
+        //renderer.render(scene, camera);
+		render();
+		
+		function render() {
+            
+            var delta = clock.getDelta();
+            trackballControls.update(delta);
+			
+            // render using requestAnimationFrame
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+        }
+		
+		
+    });
+
+
+
+</script>
+</body>
+</html>
