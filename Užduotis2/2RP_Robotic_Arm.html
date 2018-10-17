@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Robotic Arm 2RP</title>
+    <script type="text/javascript" src="..\libs\three.js"></script>
+    <script type="text/javascript" src="..\libs\jquery-1.9.0.js"></script>
+    <script type="text/javascript" src="..\libs\stats.js"></script>
+	<script type="text/javascript" src="..\libs\dat.gui.js"></script>
+	<script type="text/javascript" src="..\libs\TrackballControls.js"></script>
+    <style>
+        body{
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div id="Stats-output"> </div>
+
+<!-- Div which will hold the Output -->
+<div id="WebGL-output"> </div>
+
+<!-- Javascript code that runs our Three.js examples -->
+<script type="text/javascript">
+
+    // once everything is loaded, we run our Three.js stuff.
+    $(function () {
+	
+		var stats = initStats();
+	
+		var clock = new THREE.Clock();
+
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        var scene = new THREE.Scene();
+		
+		var axes = new THREE.AxisHelper( 20 );
+        //scene.add(axes);
+
+        // create a camera, which defines where we're looking at.
+        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+		
+		// position and point the camera to the center of the scene
+        camera.position.x = -30;
+        camera.position.y = 40;
+        camera.position.z = 30;
+        camera.lookAt(scene.position);
+		
+        // create a render and set the size
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0xEEEEEE, 1.0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMapEnabled = true;
+		// add the output of the renderer to the html element
+        $("#WebGL-output").append(renderer.domElement);
+
+        // create the ground plane
+        var planeGeometry = new THREE.PlaneGeometry(60,30);
+        var planeMaterial =    new THREE.MeshLambertMaterial({color: 0xffffff});
+        var plane = new THREE.Mesh(planeGeometry,planeMaterial);
+        plane.receiveShadow  = true;
+
+        // rotate and position the plane
+        plane.rotation.x=-0.5*Math.PI;
+        plane.position.x=15
+        plane.position.y=0
+        plane.position.z=0
+
+        scene.add(plane);
+		
+		// add spotlight for the shadows
+        var spotLight = new THREE.SpotLight( 0xffffff );
+        spotLight.position.set( -40, 60, -10 );
+        spotLight.castShadow = true;
+        scene.add( spotLight );
+		
+		// add pointlight 
+		var light = new THREE.PointLight( 0xbcaea7, 1, 100 );
+		light.position.set( 30, 30, 0 );
+		//light.castShadow = true;
+		scene.add( light );
+		
+		//var trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
+		var trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
+		trackballControls.rotateSpeed = 1.0;
+        trackballControls.zoomSpeed = 1.0;
+        trackballControls.panSpeed = 1.0;
+		//trackballControls.noZoom=false;
+		//trackballControls.noPan=false;
+        trackballControls.staticMoving = true;
+		//trackballControls.dynamicDampingFactor=0.3;
+		
+		/////////////////////////////////////////////
+		///..........................................
+		
+		var baseBox1 = new THREE.Mesh(new THREE.CubeGeometry(10,1,2), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		baseBox1.position.x = 0;		//red
+		baseBox1.position.y = 1;		//green
+		baseBox1.position.z = -4;		//blue
+		baseBox1.receiveShadow = true;
+		scene.add( baseBox1 );
+		
+		var baseBox2 = new THREE.Mesh(new THREE.CubeGeometry(10,0.5,10), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		baseBox2.position.x = 0;
+		baseBox2.position.y = 0.25;
+		baseBox2.position.z = 0;
+		baseBox2.receiveShadow = true;
+		scene.add( baseBox2 );
+		
+		var baseCylinder = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 2), new THREE.MeshLambertMaterial({color: 0x8c3107}));
+		baseCylinder.position.x = 0;
+		baseCylinder.position.y = 1;
+		baseCylinder.position.z = 0;
+		baseCylinder.receiveShadow = true;
+		scene.add( baseCylinder );
+		
+				var rotationGroup1 = new THREE.Object3D();
+		
+		var rotation1Cylinder = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 4), new THREE.MeshLambertMaterial({color: 0xd38a67}));
+		 rotationGroup1.add( rotation1Cylinder );
+		rotation1Cylinder.position.x = 0;
+		rotation1Cylinder.position.y = 4-3;
+		rotation1Cylinder.position.z = 0;
+		rotation1Cylinder.castShadow = true;
+		rotation1Cylinder.receiveShadow = true;
+		//scene.add( rotation1Cylinder );
+		
+		var rotation1Sphere1 = new THREE.Mesh(new THREE.SphereGeometry(2), new THREE.MeshLambertMaterial({color: 0xd38a67}));
+		 rotationGroup1.add( rotation1Sphere1 );
+		//rotation1Sphere1.rotation.x = Math.PI/2;
+		rotation1Sphere1.position.set(0, 6-3, 0);
+		rotation1Sphere1.castShadow = true;
+		rotation1Sphere1.receiveShadow = true;
+		//scene.add( rotation1Sphere1 );
+		
+			var rotationGroup2 = new THREE.Object3D();
+			//rotationGroup2.position.set(0, 5, 0);
+		
+		var rotation2Cylinder = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 5), new THREE.MeshLambertMaterial({color: 0xd38a67}));
+		 rotationGroup2.add( rotation2Cylinder );
+		rotation2Cylinder.position.x = 0;
+		rotation2Cylinder.position.y = 5-5;
+		rotation2Cylinder.position.z = -0.6;
+		rotation2Cylinder.rotation.x = Math.PI/2;
+		rotation2Cylinder.castShadow = true;
+		//scene.add( rotation2Cylinder );
+		
+		
+		
+		var bodyBox1 = new THREE.Mesh(new THREE.CubeGeometry(2,7,1), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		 rotationGroup2.add( bodyBox1 );
+		bodyBox1.position.set(0, 8-5, -2.5);
+		bodyBox1.castShadow = true;
+		bodyBox1.receiveShadow = true;
+		//scene.add( bodyBox1 );
+		
+		
+		var bodyBox2 = new THREE.Mesh(new THREE.CubeGeometry(4,2.5,5.1), new THREE.MeshLambertMaterial({color: 0x918a87}));
+		 rotationGroup2.add( bodyBox2 );
+		bodyBox2.position.set(0, 11-5, -0.5);
+		bodyBox2.castShadow = true;
+		bodyBox2.receiveShadow = true;
+		//scene.add( bodyBox2 );
+		
+		
+		var bodyBox3 = new THREE.Mesh(new THREE.CubeGeometry(10,1.5,1.5), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		 rotationGroup2.add( bodyBox3 );
+		bodyBox3.position.set(2.5, 11-5, 0);
+		bodyBox3.castShadow = true;
+		bodyBox3.receiveShadow = true;
+		//scene.add( bodyBox3 );
+		
+			var extensionGroup = new THREE.Object3D();
+		
+		var extensionBox = new THREE.Mesh(new THREE.CubeGeometry(11,1,1), new THREE.MeshLambertMaterial({color: 0x918a87}));
+		 extensionGroup.add( extensionBox );
+		extensionBox.position.set( 2, 11-5-11, 0 );
+		extensionBox.castShadow = true;
+		extensionBox.receiveShadow = true;
+		//scene.add( extensionBox );
+		
+		var extensionBox2 = new THREE.Mesh(new THREE.CubeGeometry(1,0.5,0.5), new THREE.MeshLambertMaterial({color: 0x000000}));
+		 extensionGroup.add( extensionBox2 );
+		extensionBox2.position.set( -4, 11-5-11, 0 );
+		extensionBox2.castShadow = true;
+		extensionBox2.receiveShadow = true;
+		//scene.add( extensionBox2 );
+		
+		extensionGroup.position.set(0, 11, 0);
+		
+		 rotationGroup2.add(extensionGroup);
+		rotationGroup2.position.set(0, 5-3, 0);
+		//rotationGroup2.rotation.z = Math.PI/4;
+		//scene.add( rotationGroup2 );
+		
+		 rotationGroup1.add( rotationGroup2 );
+		rotationGroup1.position.set(0, 3, 0);
+		scene.add( rotationGroup1 );
+		
+		///..........................................
+		/////////////////////////////////////////////
+
+		var controls = new function() {
+            this.reach = 1;
+			this.horizontal_R = 0.0;
+			this.vertical_R = 0.0;
+            this.numberOfObjects = scene.children.length;
+			this.animate = false;
+			this.demo = false;
+
+            
+        }
+		
+		var gui = new dat.GUI();
+        //gui.add(controls, 'rotationSpeed',0,0.5);
+        //gui.add(controls, 'addCube');
+        //gui.add(controls, 'removeCube');
+		//gui.add(controls, 'numberOfObjects')
+        gui.add(controls, 'reach',1,10).listen();
+		gui.add(controls, 'horizontal_R',-Math.PI,Math.PI).listen();;
+		gui.add(controls, 'vertical_R',-(Math.PI/180)*50,(Math.PI/180)*50).listen();;//.listen();
+		gui.add(controls, 'animate');
+		gui.add(controls, 'demo');
+									//onChange(function (e) {
+		//	directionalLight.castShadow = e;
+		//});
+
+        // call the render function
+        //renderer.render(scene, camera);
+		render();
+		var timing = 0;
+		
+		function render() {
+			stats.update();
+			///////////////////////////////////////
+			//-------------------------------------
+			
+			if(controls.animate){
+				controls.horizontal_R = Math.cos(clock.getElapsedTime())*(Math.PI/180)*50;
+				//controls.horizontal_R+=0.05;
+				controls.vertical_R = Math.sin(clock.getElapsedTime())*(Math.PI/180)*50;
+				controls.reach = 1+Math.abs(Math.cos(clock.getElapsedTime())*9);
+				//controls.reach = Math.abs(Math.cos(clock.getElapsedTime()/4)*10);
+			}
+			
+			if(controls.demo){	//[1;9]
+				//controls.reach = (2 + Math.sin(clock.getElapsedTime()) * clock.getElapsedTime()/10) * 5;
+				controls.horizontal_R = Math.sin(timing*20)*Math.sin(timing)*(Math.PI/180)*50;
+				controls.vertical_R = (1-timing)*(-Math.PI/180)*45 + (timing)*(Math.PI/180)*45;
+				controls.reach = 1 + Math.abs(Math.sin(2*Math.PI*timing))*Math.sin(timing) * 9;
+				timing+=0.005;
+				if(timing>1){
+					controls.reach=1;
+					timing=0
+				}
+			}
+			
+			extensionGroup.position.x = 1-controls.reach;
+			//extensionBox2.position.x = -3-controls.reach;
+			rotationGroup1.rotation.y = -controls.horizontal_R;
+			rotationGroup2.rotation.z = -controls.vertical_R;
+			
+			
+			//-------------------------------------
+			///////////////////////////////////////		
+            
+            var delta = clock.getDelta();
+            trackballControls.update(delta);
+			
+            // render using requestAnimationFrame
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+        }
+		function initStats() {
+
+            var stats = new Stats();
+            stats.setMode(0); // 0: fps, 1: ms
+            // Align top-left
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+
+            $("#Stats-output").append( stats.domElement );
+            return stats;
+        }
+		
+		
+    });
+
+
+
+</script>
+</body>
+</html>
