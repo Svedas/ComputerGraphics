@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Robotic Arm Demo</title>
+    <script type="text/javascript" src="..\libs\three.js"></script>
+    <script type="text/javascript" src="..\libs\jquery-1.9.0.js"></script>
+    <script type="text/javascript" src="..\libs\stats.js"></script>
+	<script type="text/javascript" src="..\libs\dat.gui.js"></script>
+	<script type="text/javascript" src="..\libs\TrackballControls.js"></script>
+    <style>
+        body{
+            /* set margin to 0 and overflow to hidden, to go fullscreen */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div id="Stats-output"> </div>
+
+<!-- Div which will hold the Output -->
+<div id="WebGL-output"> </div>
+
+<!-- Javascript code that runs our Three.js examples -->
+<script type="text/javascript">
+
+    // once everything is loaded, we run our Three.js stuff.
+    $(function () {
+	
+		var clock = new THREE.Clock();
+
+        // create a scene, that will hold all our elements such as objects, cameras and lights.
+        var scene = new THREE.Scene();
+		
+		var axes = new THREE.AxisHelper( 20 );
+        //scene.add(axes);
+
+        // create a camera, which defines where we're looking at.
+        var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+		// position and point the camera to the center of the scene
+        camera.position.x = -50;
+        camera.position.y = 40;
+        camera.position.z = 40;
+        camera.lookAt(scene.position);
+		scene.add(camera);
+		var helper = new THREE.CameraHelper( camera );
+		//scene.add( helper );
+		
+		var camera2 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 300);
+		camera2.position.x = -40;
+        camera2.position.y = 6;
+        camera2.position.z = 0;
+        //camera2.lookAt(scene.position);
+		camera2.lookAt(new THREE.Vector3(0, 6, 0));
+		scene.add(camera2);
+		var helper2 = new THREE.CameraHelper( camera2 );
+		helper2.visible = false;
+		scene.add( helper2 );
+		
+		// create a render and set the size
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setClearColor(0x333333, 1.0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMapEnabled = true;
+		// add the output of the renderer to the html element
+        $("#WebGL-output").append(renderer.domElement);
+
+        // create the ground plane
+        var plane = new THREE.Mesh(new THREE.PlaneGeometry(40,40), new THREE.MeshLambertMaterial({color: 0xffffff}));
+        plane.receiveShadow  = true;
+        // rotate and position the plane
+        plane.rotation.x=-0.5*Math.PI;
+        plane.position.x=0
+        plane.position.y=0
+        plane.position.z=0
+        scene.add(plane);
+		
+		// add spotlight for the shadows
+        var spotLight = new THREE.SpotLight( 0xffffff );
+        spotLight.position.set( -40, 60, -10 );
+        spotLight.castShadow = true;
+        scene.add( spotLight );
+		var spotLightHelper = new THREE.SpotLightHelper( spotLight );
+		//scene.add( spotLightHelper );
+		
+		// add pointlight 
+		var light = new THREE.PointLight( 0xbcaea7, 1, 100 );
+		light.position.set( -10, 15, 5 );
+		//light.castShadow = true;
+		scene.add( light );
+		var pointLightHelper = new THREE.PointLightHelper( light, 1 );
+		//scene.add(pointLightHelper);
+		
+		var trackballControls = new THREE.TrackballControls(camera, renderer.domElement);
+		trackballControls.rotateSpeed = 1.0;
+        trackballControls.zoomSpeed = 1.0;
+        trackballControls.panSpeed = 1.0;
+		//trackballControls.noZoom=false;
+		//trackballControls.noPan=false;
+        trackballControls.staticMoving = true;
+		//trackballControls.dynamicDampingFactor=0.3;
+	
+		/////////////////////////////////////////////
+		///..........................................
+	
+		var baseCylinder1 = new THREE.Mesh(new THREE.CylinderGeometry(4, 5, 1), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		baseCylinder1.position.set(0, 0.5, 0);
+		baseCylinder1.receiveShadow = true;
+		scene.add( baseCylinder1 );
+		
+		var baseCylinder2 = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 1), new THREE.MeshLambertMaterial({color: 0xed4807}));
+		baseCylinder2.position.set(0, 1.5, 0);
+		baseCylinder2.castShadow = true;
+		baseCylinder2.receiveShadow = true;
+		scene.add( baseCylinder2 );
+		
+			var rotationGroup1 = new THREE.Object3D();
+		
+		var rotation1Cylinder = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 4), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		 rotationGroup1.add( rotation1Cylinder );
+		rotation1Cylinder.position.set(0, 4-4, 0);
+		rotation1Cylinder.castShadow = true;
+		rotation1Cylinder.receiveShadow = true;
+		//scene.add( rotation1Cylinder );
+		
+		var rotation1Sphere1 = new THREE.Mesh(new THREE.SphereGeometry(2), new THREE.MeshLambertMaterial({color: 0xf4b342}));
+		 rotationGroup1.add( rotation1Sphere1 );
+		rotation1Sphere1.rotation.x = Math.PI/2;
+		rotation1Sphere1.position.set(0.5, 6-4, 0);
+		rotation1Sphere1.castShadow = true;
+		rotation1Sphere1.receiveShadow = true;
+		//scene.add( rotation1Sphere1 );
+		
+		var rotation1Sphere2 = new THREE.Mesh(new THREE.SphereGeometry(2), new THREE.MeshLambertMaterial({color: 0xf4b342}));
+		 rotationGroup1.add( rotation1Sphere2 );
+		rotation1Sphere2.rotation.x = Math.PI/2;
+		rotation1Sphere2.position.set(-0.5, 6-4, 0);
+		rotation1Sphere2.castShadow = true;
+		rotation1Sphere2.receiveShadow = true;
+		//scene.add( rotation1Sphere2 );
+		
+		var rotation1Sphere2 = new THREE.Mesh(new THREE.CylinderGeometry(2,1,2), new THREE.MeshLambertMaterial({color: 0xf4b342}));
+		// rotationGroup1.add( rotation1Sphere2 );
+		rotation1Sphere2.rotation.z = -Math.PI/2;
+		rotation1Sphere2.position.set(-1.5, 6-4, 0);
+		rotation1Sphere2.castShadow = true;
+		rotation1Sphere2.receiveShadow = true;
+		//scene.add( rotation1Sphere2 );
+		
+			var rotationGroup2 = new THREE.Object3D();
+		
+		var rotation2Cylinder = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 1, 16, 12), new THREE.MeshLambertMaterial({color: 0xf4b342}));
+		 rotationGroup2.add(rotation2Cylinder);
+		rotation2Cylinder.position.set(0, 6-6, 0);
+		rotation2Cylinder.rotation.z = Math.PI/2;
+		rotation2Cylinder.castShadow = true;
+		rotation2Cylinder.receiveShadow = true;
+		//scene.add( rotation2Cylinder );
+		
+		var body1Box1 = new THREE.Mesh(new THREE.CubeGeometry(1.5, 6, 1.5), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		 rotationGroup2.add(body1Box1);
+		body1Box1.position.set(0, 10-6, 0);
+		//body1Box1.rotation.z = Math.PI/2;
+		body1Box1.castShadow = true;
+		body1Box1.receiveShadow = true;
+		//scene.add( body1Box1 );
+		
+		var body1Box2 = new THREE.Mesh(new THREE.CubeGeometry(2, 2, 2), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		 rotationGroup2.add(body1Box2);
+		body1Box2.position.set(0, 10-6, 0);
+		//body1Box1.rotation.z = Math.PI/2;
+		body1Box2.castShadow = true;
+		body1Box2.receiveShadow = true;
+		//scene.add( body1Box2 );
+		
+		var rotation2Sphere1 = new THREE.Mesh(new THREE.SphereGeometry(1), new THREE.MeshLambertMaterial({color: 0xf4b342}));
+		 rotationGroup2.add( rotation2Sphere1 );
+		rotation2Sphere1.position.set(0.5, 13-6, 0);
+		rotation2Sphere1.castShadow = true;
+		rotation2Sphere1.receiveShadow = true;
+		//scene.add( rotation2Sphere1 );
+		
+		var rotation2Sphere2 = new THREE.Mesh(new THREE.SphereGeometry(1), new THREE.MeshLambertMaterial({color: 0xf4b342}));
+		 rotationGroup2.add( rotation2Sphere2 );
+		rotation2Sphere2.position.set(-0.5, 13-6, 0);
+		rotation2Sphere2.castShadow = true;
+		rotation2Sphere2.receiveShadow = true;
+		//scene.add( rotation2Sphere2 );
+		
+			var rotationGroup3 = new THREE.Object3D();
+		
+		var rotation3Cylinder = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 16), new THREE.MeshLambertMaterial({color: 0xf4b342}));
+		 rotationGroup3.add(rotation3Cylinder);
+		rotation3Cylinder.position.set(0, 13-13, 0);
+		rotation3Cylinder.rotation.z = Math.PI/2;
+		rotation3Cylinder.castShadow = true;
+		rotation3Cylinder.receiveShadow = true;
+		//scene.add( rotation3Cylinder );
+		
+		var body2Box1 = new THREE.Mesh(new THREE.CubeGeometry(1, 6, 1), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		 rotationGroup3.add(body2Box1);
+		body2Box1.position.set(0, 16-13, 0);
+		//body1Box1.rotation.z = Math.PI/2;
+		body2Box1.castShadow = true;
+		body2Box1.receiveShadow = true;
+		//scene.add( body2Box1 );
+		
+		var body2Box11 = new THREE.Mesh(new THREE.CubeGeometry(1.5, 2, 1.5), new THREE.MeshLambertMaterial({color: 0xe08511}));
+		 rotationGroup3.add(body2Box11);
+		body2Box11.position.set(0, 16-13, 0);
+		//body1Box1.rotation.z = Math.PI/2;
+		body2Box11.castShadow = true;
+		body2Box11.receiveShadow = true;
+		//scene.add( body2Box11 );
+		
+		var body2Box2 = new THREE.Mesh(new THREE.CubeGeometry(2, 0.5, 1), new THREE.MeshLambertMaterial({color: 0x000000}));
+		 rotationGroup3.add(body2Box2);
+		body2Box2.position.set(0, 19.25-13, 0);
+		//body1Box1.rotation.z = Math.PI/2;
+		body2Box2.castShadow = true;
+		body2Box2.receiveShadow = true;
+		//scene.add( body2Box2 );
+		
+		var body2Box3 = new THREE.Mesh(new THREE.CubeGeometry(0.5, 2, 1), new THREE.MeshLambertMaterial({color: 0x000000}));
+		 rotationGroup3.add(body2Box3);
+		body2Box3.position.set(0.75, 20-13, 0);
+		//body1Box1.rotation.z = Math.PI/2;
+		body2Box3.castShadow = true;
+		body2Box3.receiveShadow = true;
+		//scene.add( body2Box2 );
+		
+		var body2Box4 = new THREE.Mesh(new THREE.CubeGeometry(0.5, 2, 1), new THREE.MeshLambertMaterial({color: 0x000000}));
+		 rotationGroup3.add(body2Box4);
+		body2Box4.position.set(-0.75, 20-13, 0);
+		//body1Box1.rotation.z = Math.PI/2;
+		body2Box4.castShadow = true;
+		body2Box4.receiveShadow = true;
+		//scene.add( body2Box2 );
+		
+			rotationGroup3.position.set(0, 13-6, 0);
+			scene.add( rotationGroup3 );
+			
+			rotationGroup2.add(rotationGroup3);
+			rotationGroup2.position.set(0, 6-4, 0);
+		
+			rotationGroup1.add(rotationGroup2);
+			rotationGroup1.position.set(0, 4, 0);
+			scene.add( rotationGroup1 );
+			
+		/////////////////////////////////////////////
+		
+		  camera1Group = new THREE.Object3D();
+		camera1Box = new THREE.Mesh(new THREE.CubeGeometry(1, 2, 4), new THREE.MeshLambertMaterial({color: 0x666666}));
+		 camera1Group.add(camera1Box);
+		camera1Box.position.set(0, 0.5, -2.5);
+		//scene.add(camera1Box);
+		
+		camera1Cylinder1 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1), new THREE.MeshLambertMaterial({color: 0x666666}));
+		 camera1Group.add(camera1Cylinder1);
+		camera1Cylinder1.rotation.z = Math.PI/2;
+		camera1Cylinder1.position.set(0, 1.5, -1.5);
+		//scene.add(camera1Cylinder1);
+		
+		camera1Cylinder2 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1), new THREE.MeshLambertMaterial({color: 0x666666}));
+		 camera1Group.add(camera1Cylinder2);
+		camera1Cylinder2.rotation.z = Math.PI/2;
+		camera1Cylinder2.position.set(0, 1.5, -3.5);
+		//scene.add(camera1Cylinder2);
+		
+		camera1Cylinder3 = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.5, 1), new THREE.MeshLambertMaterial({color: 0x777777}));
+		 camera1Group.add(camera1Cylinder3);
+		camera1Cylinder3.rotation.x = Math.PI/2;
+		camera1Cylinder3.position.set(0, 0, 0);
+		//scene.add(camera1Cylinder3);
+		
+		camera1Group.position.set(-40, 6, 0);
+		//camera1Group.lookAt(scene.position);
+		camera1Group.lookAt(new THREE.Vector3(0, 6, 0));
+		scene.add(camera1Group);
+		
+		/////////////////////////////////////////////
+		
+		  camera2Group = new THREE.Object3D();
+		camera2Box = new THREE.Mesh(new THREE.CubeGeometry(1, 2, 4), new THREE.MeshLambertMaterial({color: 0x666666}));
+		 camera2Group.add(camera2Box);
+		camera2Box.position.set(0, 0.5, -2.5);
+		//scene.add(camera2Box);
+		
+		camera2Cylinder1 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1), new THREE.MeshLambertMaterial({color: 0x666666}));
+		 camera2Group.add(camera2Cylinder1);
+		camera2Cylinder1.rotation.z = Math.PI/2;
+		camera2Cylinder1.position.set(0, 1.5, -1.5);
+		//scene.add(camera2Cylinder1);
+		
+		camera2Cylinder2 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1), new THREE.MeshLambertMaterial({color: 0x666666}));
+		 camera2Group.add(camera2Cylinder2);
+		camera2Cylinder2.rotation.z = Math.PI/2;
+		camera2Cylinder2.position.set(0, 1.5, -3.5);
+		//scene.add(camera2Cylinder2);
+		
+		camera2Cylinder3 = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.5, 1), new THREE.MeshLambertMaterial({color: 0x777777}));
+		 camera2Group.add(camera2Cylinder3);
+		camera2Cylinder3.rotation.x = Math.PI/2;
+		camera2Cylinder3.position.set(0, 0, 0);
+		//scene.add(camera2Cylinder3);
+		
+		var axesCamera = new THREE.AxisHelper( 2 );
+		camera2Group.add(axesCamera);
+        //scene.add(axes);
+		
+		camera2Group.position.set(0, 30, 0);
+		//camera2Group.rotation.x = Math.PI/2;
+		camera2Group.lookAt(scene.position);
+		scene.add(camera2Group);
+		
+		/////////////////////////////////////////////
+		deBox = new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1), new THREE.MeshLambertMaterial({color: 0x133769}));
+		deBox.visible = false;
+		scene.add(deBox);
+		
+		//deBox1 = new THREE.Mesh(new THREE.CubeGeometry(1, 1, 1), new THREE.MeshLambertMaterial({color: 0x133769}));
+		//deBox1.position.set(0, 5, 10);
+		//scene.add(deBox1);
+		
+		var camera3 = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+		camera3.position.x = 0;
+        camera3.position.y = 30;
+        camera3.position.z = 0;
+        camera3.lookAt(scene.position);
+		camera3.rotation.z = -Math.PI;
+		scene.add(camera3);
+		var helper3 = new THREE.CameraHelper( camera3 );
+		//scene.add( helper3 );
+		
+		///..........................................
+		/////////////////////////////////////////////
+//}	
+		var arm = 0;
+		var body = 0;
+		var	base = 0;
+		var currentCam = 1;
+		var zoom = 50;
+		
+        var controls = new function() {
+		
+			this.animate = false;
+			this.camera = "Perspective C1";
+			this.helper = false;
+			this.fieldOfView = 45;
+			this.fov = 45;
+			
+			this.switchCamera = function() {
+				currentCam +=1;
+				if(currentCam > 3){ currentCam = 1;}
+				if(currentCam == 1){ 
+					controls.camera = "Perspective C1";
+					camera.updateProjectionMatrix();
+				} else if (currentCam == 2){
+					controls.camera = "Dolly Zoom C2";
+					camera2.updateProjectionMatrix()
+				} else if (currentCam == 3){
+					controls.camera = "Following C3";
+					camera3.updateProjectionMatrix()
+				}
+            };
+			
+			this.updateC1 = function(){
+				camera.fov = controls.fieldOfView;
+				camera.updateProjectionMatrix();
+				helper.update();
+			}
+			
+			this.updateC2 = function(){
+				if ( controls.helper == false ){
+					helper2.visible = false;
+				} else if ( controls.helper == true ){
+					helper2.visible = true;
+				}
+				
+				helper2.update();
+			}
+			
+			this.updateDollyZoom = function(){
+				camera2.fov = controls.fov;
+				camera2.updateProjectionMatrix();
+				//controls.zoom = ( 1 - (controls.fov/140) ) * 0 + (controls.fov/140) * 20;
+				zoom = 40 / ( 2.0*Math.tan(0.5 * controls.fov * Math.PI/180) );
+				helper2.update(); //window.innerWidth
+				//console.log(controls.zoom);
+			}
+			
+        }		
+		var gui = new dat.GUI();
+		gui.add(controls, 'animate');
+		gui.add(controls, 'switchCamera');
+		gui.add(controls, 'camera').listen();
+		var c1Folder = gui.addFolder("Camera1");
+		c1Folder.add(controls, 'fieldOfView', 30, 140).onChange(controls.updateC1);
+		var c2Folder = gui.addFolder("Camera2");
+		c2Folder.add(controls, 'helper').onChange(controls.updateC2);
+		c2Folder.add(controls, 'fov', 10, 150).listen().onChange(controls.updateDollyZoom);
+		//c2Folder.add(controls, 'zoom', 0, 30).listen().onChange(controls.updateDollyZoom);
+
+        // call the render function
+		render();
+		
+		var timing = 0;
+		var r = 0;
+		var phase = 1;
+		var angle = 0;
+		function render() {
+		
+			rotationGroup1.rotation.y = -base;
+			rotationGroup2.rotation.x = body;
+			rotationGroup3.rotation.x = arm;
+			
+			if(controls.animate){
+				//arm = Math.cos(timing)*(Math.PI/180)*50;
+				body = Math.sin(timing)*(Math.PI/180)*90;
+				deBox.position.set( 0, 6 + (Math.cos(body)*14), Math.sin(body)*14 );
+				angle = body * 180 / Math.PI;
+				
+				if(timing > 2.0 * Math.PI){
+					timing = 0;
+				}
+				timing += 0.02;
+				
+				if( angle < 50 && angle >= 0 && phase == 1){
+					camera3.rotation.x = -Math.sin(timing)*(Math.PI/180)*50 - Math.PI/2;
+					camera2Group.rotation.x = -Math.sin(timing)*(Math.PI/180)*50 + Math.PI/2;
+					
+					//r = (timing - Math.PI) / Math.PI * Math.PI;
+					r = (50-angle)/50 * 1.0 * Math.PI;
+					
+					camera3.rotation.z = r + Math.PI*1.0;
+					camera2Group.rotation.z = r;
+					
+					
+				}else if ( angle < -50 && phase == 1){
+					phase = 2;
+					//r = 0;
+				} else if ( angle > -50 && angle <= 0 && phase == 2){
+					camera3.rotation.x = -Math.sin(timing)*(Math.PI/180)*50 - Math.PI/2;
+					camera2Group.rotation.x = -Math.sin(timing)*(Math.PI/180)*50 + Math.PI/2;
+					
+					//r = (timing - 2*Math.PI) * 2*Math.PI;
+					r = (50+angle)/50 * 1.0 * Math.PI + Math.PI;
+					
+					camera3.rotation.z = r + Math.PI*1.0;
+					camera2Group.rotation.z = r;
+					
+				} else if ( angle > 50 && phase == 2){
+					phase = 1;
+					//r = -Math.PI;
+				} else {
+					//r = 0.0;
+					camera3.lookAt(deBox.position);
+					camera2Group.lookAt(deBox.position);
+					//console.log(""+body*180/Math.PI );
+				}
+				
+				camera3.updateProjectionMatrix();
+				console.log(phase);
+				//console.log(""+body*180/Math.PI );
+			}
+			
+			var dollyzoom = - zoom;
+			
+			camera2.position.x = dollyzoom;
+			camera1Group.position.x = dollyzoom;
+            
+            var delta = clock.getDelta();
+            trackballControls.update(delta);
+			
+            // render using requestAnimationFrame
+            requestAnimationFrame(render);
+			if(currentCam == 1){ 
+				renderer.render(scene, camera);
+			} else if (currentCam == 2){
+				renderer.render(scene, camera2);
+			} else if (currentCam == 3){
+				renderer.render(scene, camera3);
+			}
+        }	
+    });
+
+
+
+</script>
+</body>
+</html>
